@@ -1,5 +1,9 @@
 import { createClient } from "contentful";
 import RecipeCard from "../components/RecipeCard";
+import RichTextCompile from "../components/RichTextCompile";
+import RichTextHelper from "../components/RichTextHelper";
+import { BLOCKS, INLINES, MARKS } from "@contentful/rich-text-types";
+import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 
 export async function getStaticProps() {
   const client = createClient({
@@ -8,22 +12,29 @@ export async function getStaticProps() {
   });
 
   const res = await client.getEntries({ content_type: "recipe" });
+  const resdynamic = await client.getEntries({
+    content_type: "dynamicPage",
+  });
 
   return {
     props: {
       recipes: res.items,
+      resdynamics: resdynamic.items,
     },
-    revalidate: 1
+    revalidate: 1,
   };
 }
 
-export default function Recipes({ recipes }) {
-  console.log(recipes);
-
+export default function Recipes({ recipes, resdynamics }) {
+  
   return (
     <div className="recipe-list">
       {recipes.map((recipe) => (
         <RecipeCard key={recipe.sys.id} recipe={recipe} />
+      ))}
+
+      {resdynamics.map((resdynamic) => (
+        <RichTextHelper resdynamic={resdynamic} />
       ))}
 
       <style jsx>{`
