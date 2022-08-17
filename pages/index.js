@@ -26,7 +26,6 @@ export async function getStaticProps() {
 }
 
 export default function Recipes({ recipes, resdynamics }) {
-  
   return (
     <div className="recipe-list">
       {recipes.map((recipe) => (
@@ -36,6 +35,10 @@ export default function Recipes({ recipes, resdynamics }) {
       {resdynamics.map((resdynamic) => (
         <RichTextHelper resdynamic={resdynamic} />
       ))}
+
+      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Button
+      </button>
 
       <style jsx>{`
         .recipe-list {

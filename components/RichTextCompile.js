@@ -18,8 +18,7 @@ function RichTextCompile({ component, key }) {
     });
     const res = await client.getEntry(component);
 
-    // console.log(res);
-    debugger;
+  
     if (res.sys.contentType.sys.id === "imageWithText") {
       setItem(res);
     } else {
