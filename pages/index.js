@@ -1,40 +1,73 @@
+import { GraphQLClient, gql } from "graphql-request";
 import { createClient } from "contentful";
 import RecipeCard from "../components/RecipeCard";
 import RichTextCompile from "../components/RichTextCompile";
 import RichTextHelper from "../components/RichTextHelper";
-import { BLOCKS, INLINES, MARKS } from "@contentful/rich-text-types";
-import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 
 export async function getStaticProps() {
-  const client = createClient({
-    space: process.env.CONTENTFUL_SPACE_ID,
-    accessToken: process.env.CONTENTFUL_ACCESS_KEY,
+  const endpoint = `https://graphql.contentful.com/content/v1/spaces/${process.env.CONTENTFUL_SPACE_ID}`;
+
+  const graphQLClient = new GraphQLClient(endpoint, {
+    headers: {
+      authorization: `Bearer ${process.env.CONTENTFUL_ACCESS_KEY}`,
+    },
   });
 
-  const res = await client.getEntries({ content_type: "recipe" });
-  const resdynamic = await client.getEntries({
-    content_type: "dynamicPage",
-  });
+  const listeningQuery = gql`
+    {
+      recipeCollection {
+        items {
+          title
+          slug
+          thumbnail {
+            title
+            description
+            contentType
+            fileName
+            size
+            url
+            width
+            height
+          }
+          ingredients
+          cookingTime
+        }
+      }
+    }
+  `;
+
+  const listings = await graphQLClient.request(listeningQuery);
+
+
+  // const client = createClient({
+  //   space: process.env.CONTENTFUL_SPACE_ID,
+  //   accessToken: process.env.CONTENTFUL_ACCESS_KEY,
+  // });
+
+  // const res = await client.getEntries({ content_type: "recipe" });
+  // const resdynamic = await client.getEntries({
+  //   content_type: "dynamicPage",
+  // });
 
   return {
     props: {
-      recipes: res.items,
-      resdynamics: resdynamic.items,
+      listings,
     },
     revalidate: 1,
   };
 }
 
-export default function Recipes({ recipes, resdynamics }) {
+export default function Recipes({ listings }) {
+  console.log(listings.recipeCollection.items);
   return (
     <div className="recipe-list">
-      {recipes.map((recipe) => (
-        <RecipeCard key={recipe.sys.id} recipe={recipe} />
+      {listings.recipeCollection.items.map((recipe) => (
+        <RecipeCard key={recipe.slug} recipe={recipe} />
       ))}
 
-      {resdynamics.map((resdynamic) => (
+      {/* {resdynamics.map((resdynamic) => (
         <RichTextHelper resdynamic={resdynamic} />
-      ))}
+      ))} */}
 
       <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
         Button

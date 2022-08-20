@@ -10,6 +10,8 @@
   "dependencies": {
     "@contentful/rich-text-react-renderer": "^15.12.1",
     "contentful": "^9.1.33",
+    "graphql": "^16.6.0",
+    "graphql-request": "^4.3.0",
     "next": "10.0.8",
     "react": "17.0.1",
     "react-dom": "17.0.1"
